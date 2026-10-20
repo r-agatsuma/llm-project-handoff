@@ -169,7 +169,7 @@ can use the same model.
 
 ## Status
 
-v0 protocol core is drafted and independently reviewed.
+v0 protocol core is drafted.
 Templates and implementation examples remain intentionally lightweight.
 
 The protocol originated from a real multi-session software project where a
