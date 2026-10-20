@@ -30,8 +30,11 @@ State the current intended progression or next reviewable checkpoint.
 Reference durable decisions whose consequences still affect the current path.
 
 Use stable identifiers or bounded references.
-Do not re-summarize full decision rationale unless the rationale itself is
-necessary current coordination state and has no durable home.
+Do not re-summarize full decision rationale in the Snapshot.
+
+If a small, non-obvious consequence of a durable decision is necessary for
+next-action selection, record that bounded consequence under
+`CONSTRAINTS / DO NOT INFER` while keeping the durable decision reference here.
 
 ## AUTHORITY MAP
 
@@ -64,13 +67,17 @@ instructions.
 
 ## HANDOFF VALIDATION
 
-Record lightweight evidence that the handoff is usable, when available.
+Record only lightweight validation evidence available before activation.
 
 Examples:
 
-- a fresh session resumed through the bounded read path;
-- current authority references were verified;
-- the Router points to this Snapshot;
-- known non-blocking hardening remains deferred.
+- candidate checked for self-containment;
+- required current authority references resolve;
+- candidate contains no historical handoff inheritance links;
+- candidate does not duplicate detailed task or decision authority.
+
+Post-activation evidence, such as a successful fresh-session resume or the
+Router currently pointing to this Snapshot, MUST live outside this immutable
+Snapshot.
 
 Do not turn this section into a general test report.
