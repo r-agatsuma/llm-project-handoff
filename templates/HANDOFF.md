@@ -14,7 +14,7 @@ Read the current handoff Router:
 
 Then:
 
-1. read exactly the current `[HANDOFF]` Snapshot referenced by the Router;
+1. read exactly the current Snapshot referenced by the Router;
 2. use that Snapshot to identify the current task, active decisions,
    authorities, constraints, cold paths, and next action;
 3. read additional project artifacts only when the current Snapshot or current
