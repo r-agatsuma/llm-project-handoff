@@ -148,13 +148,29 @@ Those remain project-local concerns.
 
 See [PROTOCOL.md](./PROTOCOL.md) for the normative protocol.
 
-Templates and implementation examples are expected to stay intentionally small.
-The protocol should remain usable with GitHub Issues, other trackers, or local
-files without requiring a specific orchestration tool.
+## Templates
+
+Minimal templates are provided for:
+
+- [Bootstrap](./templates/HANDOFF.md)
+- [Router](./templates/router.md)
+- [Snapshot](./templates/snapshot.md)
+
+These templates are examples of the protocol semantics, not a required storage
+format.
+
+## Implementations
+
+- [GitHub Issues example](./examples/github-issues/README.md)
+
+Concrete implementations are intentionally kept separate from the normative
+protocol so that GitHub, another tracker, local files, or another storage layer
+can use the same model.
 
 ## Status
 
-Early draft.
+v0 protocol core is drafted and independently reviewed.
+Templates and implementation examples remain intentionally lightweight.
 
 The protocol originated from a real multi-session software project where a
 fresh ChatGPT coordinator successfully resumed work through the bounded path:
