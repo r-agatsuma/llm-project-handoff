@@ -49,7 +49,8 @@ A Router:
 - MUST point to exactly one current Snapshot;
 - MUST NOT act as a history index;
 - MUST NOT retain links to previous, superseded, or ancestor Snapshots;
-- SHOULD contain as little state as possible.
+- MUST NOT own or duplicate current coordination state beyond information
+  required to route to the current Snapshot.
 
 Changing the Router pointer is the operation that makes a prepared Snapshot
 current.
@@ -133,12 +134,15 @@ A fresh coordinator SHOULD resume in this order:
 
 Historical Snapshots MUST NOT be searched or read during normal resume.
 
-Open-ended project archaeology SHOULD NOT be used to reconstruct missing current
-state.
+During normal resume, a material current decision that is genuinely missing or
+ambiguous MUST NOT be reconstructed from historical state.
 
-If a material current decision is missing or ambiguous, the coordinator SHOULD
-return the ambiguity to the Human or current authority instead of inferring the
-decision from historical state.
+The coordinator MUST instead return the ambiguity to the Human or current
+authority for resolution.
+
+Reading a current durable authority that directly resolves the question is not
+historical reconstruction and does not make the decision "missing" for this
+rule.
 
 ## 4. Snapshot construction rules
 
@@ -193,8 +197,8 @@ The purpose is correct next-action selection.
 
 ### 4.5 Remove inactive state
 
-When state is no longer current, it SHOULD disappear from the next Snapshot
-unless it must be retained explicitly as a Cold path.
+When state is no longer current, it MUST be removed from the next Snapshot or
+explicitly retained as a Cold path.
 
 The current Snapshot is a projection of active coordination state, not an event
 log.
@@ -204,27 +208,38 @@ log.
 To advance handoff state:
 
 1. create or update any required durable decisions;
-2. prepare a new immutable Snapshot;
-3. verify that the Snapshot is self-contained for current coordination;
-4. replace the Router's current pointer with the new Snapshot;
+2. prepare a candidate handoff record;
+3. verify that the candidate is self-contained for current coordination;
+4. replace the Router's current pointer with the candidate, making it the new
+   current Snapshot;
 5. do not append a link to the previous Snapshot.
 
-The Router pointer replacement is the **commit point** for the new handoff
-state.
+The Router pointer replacement is the **commit point** for the handoff state
+only.
 
-If preparation fails before that point, the old Snapshot remains current.
+It does not imply transactional rollback of external durable authorities.
+
+If preparation fails before the Router update, the old Snapshot remains current.
+If external authority has already advanced and now conflicts with that old
+Snapshot, the conflict is handled according to Section 8.
 
 No stronger transactional mechanism is required by this protocol.
 
 ## 6. Immutability
 
-Snapshots are immutable by protocol.
+A candidate handoff record MAY be edited while it is being prepared and
+validated.
+
+Once the Router selects that record as the current Snapshot, the Snapshot MUST
+NOT be modified.
+
+Historical Snapshots remain immutable after the Router moves elsewhere.
 
 v0 treats this as a procedural invariant.
 
 Storage systems such as GitHub Issues may technically allow in-place edits; the
-protocol requires maintainers not to use that capability to mutate a published
-Snapshot.
+protocol requires maintainers not to use that capability to mutate a current or
+historical Snapshot.
 
 Projects that require stronger integrity MAY add mechanisms such as:
 
@@ -338,4 +353,4 @@ with the following invariants:
 4. current durable decisions are referenced, not recursively summarized;
 5. obsolete state is removed or explicitly marked cold;
 6. missing material decisions are not reconstructed from history;
-7. Router replacement commits the new handoff state.
+7. Router replacement commits the new handoff state only.
